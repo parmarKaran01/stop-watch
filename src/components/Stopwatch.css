@@ -1,0 +1,11 @@
+.buttonContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 14px;
+
+    >button {
+        padding: 12px 24px;
+    }
+}
