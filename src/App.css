@@ -40,3 +40,30 @@
 .read-the-docs {
   color: #888;
 }
+
+select {
+  padding: 0.5em 2em 0.5em 0.5em; /* Add padding to the right */
+  border-radius: 4px;
+  background-color: black;
+  font-size: 1em;
+  color: white;
+}
+
+select:focus {
+  border-color: #646cff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(100, 108, 255, 0.5);
+}
+
+.landingWrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.modeDropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

@@ -1,12 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import './Stopwatch.css'
+import { MODES } from './utils';
 
 interface Lap {
   lapTime: number;
   totalTime: number;
 }
 
-const Stopwatch = () => {
+type StopwatchProps = {
+  mode : 'ASSESMENT' | 'PRACTICE';
+  cooldownInterval: number;
+}
+
+const Stopwatch = ({mode, cooldownInterval} : StopwatchProps) => {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [laps, setLaps] = useState<Lap[]>([]);
@@ -15,6 +21,7 @@ const Stopwatch = () => {
   const [isWaitingForClick, setIsWaitingForClick] = useState<boolean>(false); // To handle the 1-second delay
   const [countdown, setCountdown] = useState<number | null>(null); // Countdown state
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
 
   // Colors and directions
   const colors = ['Red', 'Blue', 'Green'];
@@ -70,7 +77,7 @@ const Stopwatch = () => {
         setPrompt(generateRandomPrompt()); // Show new prompt after 1 second
         setIsWaitingForClick(false);
         setIsRunning(true); // Start the timer again
-      }, 1000);
+      }, cooldownInterval * 1000);
     }
   };
 
@@ -147,10 +154,10 @@ const Stopwatch = () => {
       </div>
       <div className='buttonContainer'>
         <button onClick={startGame} disabled={isRunning || countdown !== null}>
-          Start Game
+          Start
         </button>
         <button onClick={stopGame} disabled={!isRunning}>
-          Stop Game
+          Stop
         </button>
         <button onClick={resetGame}>
           Reset
