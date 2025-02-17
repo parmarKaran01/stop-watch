@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import './Stopwatch.css'
-import { MODES } from './utils';
+import { useState, useRef, useEffect } from "react";
+import "./Stopwatch.css";
 
 interface Lap {
   lapTime: number;
@@ -8,29 +7,31 @@ interface Lap {
 }
 
 type StopwatchProps = {
-  mode : 'ASSESMENT' | 'PRACTICE';
   cooldownInterval: number;
-}
+};
 
-const Stopwatch = ({mode, cooldownInterval} : StopwatchProps) => {
+const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [laps, setLaps] = useState<Lap[]>([]);
   const [showAverage, setShowAverage] = useState<boolean>(false);
-  const [prompt, setPrompt] = useState<{ color: string; direction: string }>({ color: '', direction: '' }); // Current prompt
+  const [prompt, setPrompt] = useState<{ color: string; direction: string }>({
+    color: "",
+    direction: "",
+  }); // Current prompt
   const [isWaitingForClick, setIsWaitingForClick] = useState<boolean>(false); // To handle the 1-second delay
   const [countdown, setCountdown] = useState<number | null>(null); // Countdown state
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-
   // Colors and directions
-  const colors = ['Red', 'Blue', 'Green'];
-  const directions = ['L', 'R'];
+  const colors = ["Red", "Blue", "Green"];
+  const directions = ["L", "R"];
 
   // Generate a random prompt
   const generateRandomPrompt = (): { color: string; direction: string } => {
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+    const randomDirection =
+      directions[Math.floor(Math.random() * directions.length)];
     return { color: randomColor, direction: randomDirection };
   };
 
@@ -39,7 +40,7 @@ const Stopwatch = ({mode, cooldownInterval} : StopwatchProps) => {
     setTime(0);
     setLaps([]);
     setShowAverage(false);
-    setPrompt({ color: '', direction: '' });
+    setPrompt({ color: "", direction: "" });
     setIsWaitingForClick(false);
 
     // Start countdown
@@ -94,7 +95,7 @@ const Stopwatch = ({mode, cooldownInterval} : StopwatchProps) => {
     setTime(0);
     setLaps([]);
     setShowAverage(false);
-    setPrompt({ color: '', direction: '' });
+    setPrompt({ color: "", direction: "" });
     setIsWaitingForClick(false);
     setCountdown(null);
   };
@@ -112,7 +113,9 @@ const Stopwatch = ({mode, cooldownInterval} : StopwatchProps) => {
     const seconds = Math.floor((time % 60000) / 1000);
     const milliseconds = Math.floor((time % 1000) / 10);
 
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
   };
 
   // Effect to handle the timer
@@ -129,53 +132,58 @@ const Stopwatch = ({mode, cooldownInterval} : StopwatchProps) => {
   }, [isRunning]);
 
   useEffect(() => {
-    let body = document.querySelector('body');
-    if(body) {
-      if(isWaitingForClick){
-        body.style.backgroundColor = '#242424'
-      }else {
-        body.style.backgroundColor = prompt.color.toLowerCase()
+    let body = document.querySelector("body");
+    if (body) {
+      if (isWaitingForClick) {
+        body.style.backgroundColor = "#242424";
+      } else {
+        body.style.backgroundColor = prompt.color.toLowerCase();
       }
     }
-  }, [prompt, isWaitingForClick])
+  }, [prompt, isWaitingForClick]);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       {countdown !== null && (
-        <div style={{ fontSize: '3rem', margin: '20px' }}>
-          {countdown > 0 ? countdown : 'Go!'}
+        <div style={{ fontSize: "3rem", margin: "20px" }}>
+          {countdown > 0 ? countdown : "Go!"}
         </div>
       )}
-      <div style={{ fontSize: '2rem', margin: '20px' }}>
+      <div style={{ fontSize: "2rem", margin: "20px" }}>
         <h1>{prompt.direction}</h1>
       </div>
       <div>
         <h2>{formatTime(time)}</h2>
       </div>
-      <div className='buttonContainer'>
+      <div className="buttonContainer">
         <button onClick={startGame} disabled={isRunning || countdown !== null}>
           Start
         </button>
         <button onClick={stopGame} disabled={!isRunning}>
           Stop
         </button>
-        <button onClick={resetGame}>
-          Reset
-        </button>
-        <button onClick={() => setShowAverage(!showAverage)} disabled={laps.length === 0}>
-          {showAverage ? 'Hide Average' : 'Average'}
+        <button onClick={resetGame}>Reset</button>
+        <button
+          onClick={() => setShowAverage(!showAverage)}
+          disabled={laps.length === 0}
+        >
+          {showAverage ? "Hide Average" : "Average"}
         </button>
       </div>
       <div
         onClick={handleClick}
         style={{
-          cursor: isRunning && !isWaitingForClick ? 'pointer' : 'not-allowed',
-          margin: '20px',
-          padding: '20px',
-          border: '1px solid #000',
+          cursor: isRunning && !isWaitingForClick ? "pointer" : "not-allowed",
+          margin: "20px",
+          padding: "20px",
+          border: "1px solid #000",
         }}
       >
-        <h2>{isWaitingForClick ? 'Wait for the next prompt...' : 'Click Here to Record Lap'}</h2>
+        <h2>
+          {isWaitingForClick
+            ? "Wait for the next prompt..."
+            : "Click Here to Record Lap"}
+        </h2>
       </div>
       <div>
         <h2>Laps</h2>

@@ -14,50 +14,59 @@ function App() {
 
   return (
     <>
-    <Navbar showLandingPage={showLandingPage} setShowLandingPage={setShowLandingPage}  mode={mode} cooldownInterval={cooldownInterval} setCooldownInterval={setCooldownInterval}/>
-
-    {
-      showLandingPage ?     <div>
-      <img
-        src="/act-react-logo-removebg.png"
-        width={200}
-        height={200}
-        alt="main-logo"
+      <Navbar
+        showLandingPage={showLandingPage}
+        setShowLandingPage={setShowLandingPage}
+        mode={mode}
+        cooldownInterval={cooldownInterval}
+        setCooldownInterval={setCooldownInterval}
       />
-      <div className="landingWrapper">
-        <div className="modeDropdown">
-          <label htmlFor="selectMode">Select Mode</label>
-          <select
-            id="selectMode"
-            value={mode}
-            onChange={(e) => setMode(e.target.value as ModeType)}
-          >
-            <option value="ASSESMENT">Assessment</option>
-            <option value="PRACTICE">Practice</option>
-          </select>
-        </div>
 
-        {isPracticeMode && (
-          <div className="modeDropdown">
-            <label htmlFor="intervalSelect">Select Interval </label>
-            <select
-              id="intervalSelect"
-              value={cooldownInterval}
-              onChange={(e) => setCooldownInterval(parseInt(e.target.value))}
-            >
-              {[...Array(6).keys()].map((i) => (
-                <option key={i} value={i + 1}>
-                  {i + 1} {i === 0 ? "second" : "seconds"}
-                </option>
-              ))}
-            </select>
+      {showLandingPage ? (
+        <div>
+          <img
+            src="/act-react-logo-removebg.png"
+            width={200}
+            height={200}
+            alt="main-logo"
+          />
+          <div className="landingWrapper">
+            <div className="modeDropdown">
+              <label htmlFor="selectMode">Select Mode</label>
+              <select
+                id="selectMode"
+                value={mode}
+                onChange={(e) => setMode(e.target.value as ModeType)}
+              >
+                <option value="ASSESMENT">Assessment</option>
+                <option value="PRACTICE">Practice</option>
+              </select>
+            </div>
+
+            {isPracticeMode && (
+              <div className="modeDropdown">
+                <label htmlFor="intervalSelect">Select Interval </label>
+                <select
+                  id="intervalSelect"
+                  value={cooldownInterval}
+                  onChange={(e) =>
+                    setCooldownInterval(parseInt(e.target.value))
+                  }
+                >
+                  {[...Array(6).keys()].map((i) => (
+                    <option key={i} value={i + 1}>
+                      {i + 1} {i === 0 ? "second" : "seconds"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <button onClick={() => setShowLandingPage(false)}>Start</button>
-    </div> :  <Stopwatch mode={mode} cooldownInterval={cooldownInterval}/>
-    }
-       
+          <button onClick={() => setShowLandingPage(false)}>Start</button>
+        </div>
+      ) : (
+        <Stopwatch cooldownInterval={cooldownInterval} />
+      )}
     </>
   );
 }
