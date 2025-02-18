@@ -13,6 +13,7 @@ type Props = {
 const Navbar = ({ showLandingPage, setShowLandingPage, mode, setCooldownInterval, cooldownInterval }: Props) => {
     const isPracticeMode = mode === MODES.PRACTICE;
   const goback = () => {
+    setCooldownInterval(1)
     setShowLandingPage(true);
   };
   return (
@@ -26,17 +27,13 @@ const Navbar = ({ showLandingPage, setShowLandingPage, mode, setCooldownInterval
       {
         isPracticeMode && !showLandingPage && <div className="modeDropdown">
         <label htmlFor="intervalSelect">Select Interval </label>
-        <select
+        <input
+          type="number"
           id="intervalSelect"
-          onChange={(e) => setCooldownInterval(parseInt(e.target.value))}
+          onChange={(e) => setCooldownInterval(parseFloat(e.target.value))}
           value={cooldownInterval}
-        >
-          {[...Array(6).keys()].map((i) => (
-            <option key={i} value={i + 1}>
-              {i + 1} {i === 0 ? "second" : "seconds"}
-            </option>
-          ))}
-        </select>
+          min={1}
+        />
       </div>
       }
       {!showLandingPage && <button onClick={goback}>Back</button>}

@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
 import "./Stopwatch.css";
+import { COLOR_CODES, MODES } from "./utils";
 
 interface Lap {
   lapTime: number;
@@ -8,9 +9,10 @@ interface Lap {
 
 type StopwatchProps = {
   cooldownInterval: number;
+  mode: "ASSESMENT" | "PRACTICE";
 };
 
-const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
+const Stopwatch = ({ cooldownInterval, mode }: StopwatchProps) => {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [laps, setLaps] = useState<Lap[]>([]);
@@ -23,9 +25,11 @@ const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
   const [countdown, setCountdown] = useState<number | null>(null); // Countdown state
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const isPracticeMode = mode === MODES.PRACTICE;
+
   // Colors and directions
-  const colors = ["Red", "Blue", "Green"];
-  const directions = ["L", "R"];
+  const colors = Object.values(COLOR_CODES);
+  const directions = ["LEFT", "RIGHT"];
 
   // Generate a random prompt
   const generateRandomPrompt = (): { color: string; direction: string } => {
@@ -78,14 +82,18 @@ const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
         setPrompt(generateRandomPrompt()); // Show new prompt after 1 second
         setIsWaitingForClick(false);
         setIsRunning(true); // Start the timer again
-      }, cooldownInterval * 1000);
+      }, 1000);
     }
   };
 
   // Stop the game
   const stopGame = (): void => {
-    clearInterval(intervalRef.current ?? 0);
     setIsRunning(false);
+  };
+
+  //resume the game
+  const resumeGame = () => {
+    setIsRunning(true);
   };
 
   // Reset the game
@@ -128,7 +136,9 @@ const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
       clearInterval(intervalRef.current ?? 0);
     }
 
-    return () => clearInterval(intervalRef.current ?? 0);
+    return () => {
+      clearInterval(intervalRef.current ?? 0);
+    };
   }, [isRunning]);
 
   useEffect(() => {
@@ -142,14 +152,31 @@ const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
     }
   }, [prompt, isWaitingForClick]);
 
+  // Effect to handle prompt change in practice mode
+  useEffect(() => {
+    let body = document.querySelector("body");
+    if (isPracticeMode && isRunning && !isWaitingForClick) {
+      const promptInterval = setInterval(() => {
+        handleClick();
+      }, cooldownInterval * 1000);
+
+      return () => {
+        clearInterval(promptInterval);
+        if (body) {
+          body.style.backgroundColor = "#242424";
+        }
+      };
+    }
+  }, [isPracticeMode, isRunning, cooldownInterval]);
+
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+    <div style={{ textAlign: "center", marginTop: "50px", maxWidth : '350px' }}>
       {countdown !== null && (
         <div style={{ fontSize: "3rem", margin: "20px" }}>
           {countdown > 0 ? countdown : "Go!"}
         </div>
       )}
-      <div style={{ fontSize: "2rem", margin: "20px" }}>
+      <div style={{ fontSize: "1.5rem", margin: "20px" }}>
         <h1>{prompt.direction}</h1>
       </div>
       <div>
@@ -159,9 +186,14 @@ const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
         <button onClick={startGame} disabled={isRunning || countdown !== null}>
           Start
         </button>
-        <button onClick={stopGame} disabled={!isRunning}>
-          Stop
-        </button>
+        {!isPracticeMode ? (
+          <button onClick={stopGame} disabled={!isRunning}>Stop</button>
+        ) : (
+          <button onClick={isRunning ? stopGame : resumeGame}>
+            {isRunning ? "Pause" : "Resume"}
+          </button>
+        )}
+
         <button onClick={resetGame}>Reset</button>
         <button
           onClick={() => setShowAverage(!showAverage)}
@@ -170,31 +202,37 @@ const Stopwatch = ({ cooldownInterval }: StopwatchProps) => {
           {showAverage ? "Hide Average" : "Average"}
         </button>
       </div>
-      <div
-        onClick={handleClick}
-        style={{
-          cursor: isRunning && !isWaitingForClick ? "pointer" : "not-allowed",
-          margin: "20px",
-          padding: "20px",
-          border: "1px solid #000",
-        }}
-      >
-        <h2>
-          {isWaitingForClick
-            ? "Wait for the next prompt..."
-            : "Click Here to Record Lap"}
-        </h2>
-      </div>
-      <div>
-        <h2>Laps</h2>
-        <ul>
-          {laps.map((lap, index) => (
-            <li key={index}>
-              Lap {index + 1}: {formatTime(lap.lapTime)}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {!isPracticeMode && (
+        <Fragment>
+          <div
+            onClick={handleClick}
+            style={{
+              cursor:
+                isRunning && !isWaitingForClick ? "pointer" : "not-allowed",
+              margin: "20px",
+              padding: "20px",
+              border: "1px solid #000",
+            }}
+          >
+            <h2>
+              {isWaitingForClick
+                ? "Wait for the next prompt..."
+                : "Click Here to Record Lap"}
+            </h2>
+          </div>
+          <div>
+            <h2>Laps</h2>
+            <ul>
+              {laps.map((lap, index) => (
+                <li key={index}>
+                  Lap {index + 1}: {formatTime(lap.lapTime)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Fragment>
+      )}
+
       {showAverage && laps.length > 0 && (
         <div>
           <h3>Average Lap Time: {formatTime(calculateAverageLapTime())}</h3>

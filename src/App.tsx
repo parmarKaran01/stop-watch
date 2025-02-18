@@ -46,26 +46,22 @@ function App() {
             {isPracticeMode && (
               <div className="modeDropdown">
                 <label htmlFor="intervalSelect">Select Interval </label>
-                <select
+                <input
+                  type="number"
                   id="intervalSelect"
                   value={cooldownInterval}
                   onChange={(e) =>
-                    setCooldownInterval(parseInt(e.target.value))
+                  setCooldownInterval(parseFloat(e.target.value))
                   }
-                >
-                  {[...Array(6).keys()].map((i) => (
-                    <option key={i} value={i + 1}>
-                      {i + 1} {i === 0 ? "second" : "seconds"}
-                    </option>
-                  ))}
-                </select>
+                  min="1"
+                />
               </div>
             )}
           </div>
           <button onClick={() => setShowLandingPage(false)}>Start</button>
         </div>
       ) : (
-        <Stopwatch cooldownInterval={cooldownInterval} />
+        <Stopwatch cooldownInterval={cooldownInterval} mode={mode}/>
       )}
     </>
   );
